@@ -1,0 +1,22 @@
+server:
+  port: 8071
+spring:
+  application:
+    name: "configserver"
+  profiles:
+    #active: native
+    active: git
+  cloud:
+    config:
+      server:
+        #native:
+          #search-locations: classpath:/config
+          #search-locations: "file:///Users/karthikt/Desktop/Shekhar T/projects/config"
+        git:
+          uri: https://github.com/shekhartn/microservices-config.git
+          timeout: 5
+          default-label: master
+          clone-on-start: true
+          pull-on-start: true
+encrypt:
+  key: "45D81EC1EF61DF9AD8D3E5BB397F9"
