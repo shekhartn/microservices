@@ -96,7 +96,7 @@
                 <version>3.4.2</version>
                 <configuration>
                     <to>
-                        <image>eazybytes/${project.artifactId}:s6</image>
+                        <image>shekhart/${project.artifactId}:s4</image>
                     </to>
                 </configuration>
             </plugin>
