@@ -25,3 +25,9 @@ info:
     name: "gatewayserver"
     description: "Gateway Server for Eazy Bank Application"
     version: "1.0.0"
+
+logging:
+  level:
+    com:
+      eazybytes:
+        gatewayserver: DEBUG
