@@ -11,7 +11,7 @@
 	<groupId>com.eazybytes</groupId>
 	<artifactId>configserver</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>configserver</name>
+	<name>configs erver</name>
 	<description>Config Server for Eazy Bank Micro Services</description>
 	<url/>
 	<licenses>
@@ -69,7 +69,7 @@
 				<version>3.4.2</version>
 				<configuration>
 					<to>
-						<image>shekhart/${project.artifactId}:s10</image>
+						<image>shekhart/${project.artifactId}:s11</image>
 					</to>
 				</configuration>
 			</plugin>
