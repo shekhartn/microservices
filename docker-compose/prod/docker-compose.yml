@@ -15,10 +15,9 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks: &loki-dns
-      eazybank:
-        aliases:
-          - loki
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
 
   write:
     image: grafana/loki:latest
@@ -36,8 +35,9 @@ services:
       retries: 5
     depends_on:
       - minio
-    networks:
-      <<: *loki-dns
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
 
   alloy:
     image: grafana/alloy:latest
