@@ -124,68 +124,66 @@ services:
     ports:
       - "3100"
       - "7946"
-    command: "-config.file=/etc/loki/config.yaml -target=backend -legacy-read-mode=false"
+    command: -config.file=/etc/loki/config.yaml -target=backend -legacy-read-mode=false
     depends_on:
       - gateway
     extends:
       file: common-config.yml
       service: network-deploy-service
 
-
   gateway:
     image: nginx:latest
     depends_on:
-      - read
-      - write
+      - backend
     entrypoint:
       - sh
       - -euc
       - |
         cat <<EOF > /etc/nginx/nginx.conf
         user  nginx;
-        worker_processes  5;  ## Default: 1
-        
+        worker_processes  5;
+
         events {
-          worker_connections   1000;
+          worker_connections  1000;
         }
-        
+
         http {
           resolver 127.0.0.11;
-        
+
           server {
-            listen             3100;
-        
+            listen 3100;
+
             location = / {
               return 200 'OK';
               auth_basic off;
             }
-        
+
             location = /api/prom/push {
-              proxy_pass       http://backend:3100\$$request_uri;
+              proxy_pass http://backend:3100$request_uri;
             }
-        
+
             location = /api/prom/tail {
-              proxy_pass       http://backend:3100\$$request_uri;
-              proxy_set_header Upgrade \$$http_upgrade;
+              proxy_pass http://backend:3100$request_uri;
+              proxy_set_header Upgrade $http_upgrade;
               proxy_set_header Connection "upgrade";
             }
-        
+
             location ~ /api/prom/.* {
-              proxy_pass       http://backend:3100\$$request_uri;
+              proxy_pass http://backend:3100$request_uri;
             }
-        
+
             location = /loki/api/v1/push {
-              proxy_pass       http://backend:3100\$$request_uri;
+              proxy_pass http://backend:3100$request_uri;
             }
-        
+
             location = /loki/api/v1/tail {
-              proxy_pass       http://backend:3100\$$request_uri;
-              proxy_set_header Upgrade \$$http_upgrade;
+              proxy_pass http://backend:3100$request_uri;
+              proxy_set_header Upgrade $http_upgrade;
               proxy_set_header Connection "upgrade";
             }
-        
+
             location ~ /loki/api/.* {
-              proxy_pass       http://backend:3100\$$request_uri;
+              proxy_pass http://backend:3100$request_uri;
             }
           }
         }
