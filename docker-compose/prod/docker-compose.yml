@@ -142,49 +142,50 @@ services:
       - -euc
       - |
         cat <<EOF > /etc/nginx/nginx.conf
-        user nginx;
-        worker_processes auto;
+        user  nginx;
+        worker_processes  5;  ## Default: 1
 
         events {
-          worker_connections 1024;
+          worker_connections   1000;
         }
 
         http {
           resolver 127.0.0.11;
 
           server {
-            listen 3100;
+            listen             3100;
 
             location = / {
               return 200 'OK';
+              auth_basic off;
             }
 
             location = /api/prom/push {
-              proxy_pass http://write:3100$request_uri;
+              proxy_pass       http://write:3100\$$request_uri;
             }
 
             location = /api/prom/tail {
-              proxy_pass http://read:3100$request_uri;
-              proxy_set_header Upgrade $http_upgrade;
+              proxy_pass       http://read:3100\$$request_uri;
+              proxy_set_header Upgrade \$$http_upgrade;
               proxy_set_header Connection "upgrade";
             }
 
             location ~ /api/prom/.* {
-              proxy_pass http://read:3100$request_uri;
+              proxy_pass       http://read:3100\$$request_uri;
             }
 
             location = /loki/api/v1/push {
-              proxy_pass http://write:3100$request_uri;
+              proxy_pass       http://write:3100\$$request_uri;
             }
 
             location = /loki/api/v1/tail {
-              proxy_pass http://read:3100$request_uri;
-              proxy_set_header Upgrade $http_upgrade;
+              proxy_pass       http://read:3100\$$request_uri;
+              proxy_set_header Upgrade \$$http_upgrade;
               proxy_set_header Connection "upgrade";
             }
 
             location ~ /loki/api/.* {
-              proxy_pass http://read:3100$request_uri;
+              proxy_pass       http://read:3100\$$request_uri;
             }
           }
         }
@@ -299,7 +300,6 @@ services:
     extends:
       file: common-config.yml
       service: microservice-eureka-config
-
   gatewayserver:
     image: "shekhart/gatewayserver:s11"
     container_name: gatewayserver-ms
@@ -317,7 +317,6 @@ services:
     extends:
       file: common-config.yml
       service: microservice-eureka-config
-
 networks:
   eazybank:
     driver: "bridge"
