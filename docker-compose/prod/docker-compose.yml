@@ -1,6 +1,6 @@
 services:
   read:
-    image: grafana/loki:3.0.0
+    image: grafana/loki:3.1.2
     command: "-config.file=/etc/loki/config.yaml -target=read"
     ports:
       - 3101:3100
@@ -15,14 +15,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    extends:
-      file: common-config.yml
-      service: network-deploy-service
-    networks:
-      - observability
+    networks: &loki-dns
+      eazybank:
+        aliases:
+          - loki
 
   write:
-    image: grafana/loki:3.0.0
+    image: grafana/loki:3.1.2
     command: "-config.file=/etc/loki/config.yaml -target=write"
     ports:
       - 3102:3100
@@ -37,14 +36,11 @@ services:
       retries: 5
     depends_on:
       - minio
-    extends:
-      file: common-config.yml
-      service: network-deploy-service
     networks:
-      - observability
+      <<: *loki-dns
 
   alloy:
-    image: grafana/alloy:v1.0.0
+    image: grafana/alloy:v1.5.1
     volumes:
       - ../observability/alloy/alloy-local-config.yaml:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock
@@ -56,11 +52,9 @@ services:
     extends:
       file: common-config.yml
       service: network-deploy-service
-    networks:
-      - observability
 
   minio:
-    image: minio/minio:RELEASE.2024-05-27T19-17-46Z
+    image: minio/minio:RELEASE.2024-12-18T13-15-44Z
     entrypoint:
       - sh
       - -euc
@@ -85,11 +79,9 @@ services:
     extends:
       file: common-config.yml
       service: network-deploy-service
-    networks:
-      - observability
 
   grafana:
-    image: grafana/grafana:11.0.0
+    image: grafana/grafana:latest
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_ANONYMOUS_ENABLED=true
@@ -100,11 +92,22 @@ services:
       - sh
       - -euc
       - |
+        mkdir -p /etc/grafana/provisioning/datasources
+        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+        apiVersion: 1
+        datasources:
+          - name: Loki
+            type: loki
+            access: proxy
+            url: http://gateway:3100
+            jsonData:
+              httpHeaderName1: "X-Scope-OrgID"
+            secureJsonData:
+              httpHeaderValue1: "tenant1"
+        EOF
         /run.sh
     ports:
       - "3000:3000"
-    volumes:
-      - ../observability/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
     healthcheck:
       test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1" ]
       interval: 10s
@@ -113,11 +116,9 @@ services:
     extends:
       file: common-config.yml
       service: network-deploy-service
-    networks:
-      - observability
 
   backend:
-    image: grafana/loki:3.0.0
+    image: grafana/loki:3.1.2
     volumes:
       - ../observability/loki/loki-config.yaml:/etc/loki/config.yaml
     ports:
@@ -129,11 +130,9 @@ services:
     extends:
       file: common-config.yml
       service: network-deploy-service
-    networks:
-      - observability
 
   gateway:
-    image: nginx:1.25.5
+    image: nginx:1.27.3
     depends_on:
       - read
       - write
@@ -201,8 +200,6 @@ services:
     extends:
       file: common-config.yml
       service: network-deploy-service
-    networks:
-      - observability
 
   configserver:
     image: "shekhart/configserver:s11"
@@ -320,5 +317,3 @@ services:
 networks:
   eazybank:
     driver: "bridge"
-  observability:
-    driver: bridge
