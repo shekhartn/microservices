@@ -9,6 +9,8 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: "admin"
       KC_HTTP_ENABLED: true
       KC_PROXY: edge
+      KEYCLOAK_FRONTEND_URL: http://13.221.43.87:7080/
+      PROXY_ADDRESS_FORWARDING: true
 
     command: "start-dev"
     extends:
