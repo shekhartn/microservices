@@ -120,7 +120,7 @@
 				<version>3.4.2</version>
 				<configuration>
 					<to>
-						<image>shekhart/${project.artifactId}:s11</image>
+						<image>shekhart/${project.artifactId}:s12</image>
 					</to>
 				</configuration>
 			</plugin>
