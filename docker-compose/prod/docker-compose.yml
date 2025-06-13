@@ -11,7 +11,9 @@ services:
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
       KC_PROXY: "edge"
-    command: "start-dev"
+    command: >
+      start-dev
+      --spi-login-protocol-openid-connect-ssl-required=none
     extends:
       file: common-config.yml
       service: network-deploy-service
