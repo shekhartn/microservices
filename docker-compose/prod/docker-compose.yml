@@ -10,7 +10,7 @@ services:
       KC_HOSTNAME_STRICT_HTTPS: "false"
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
-      #KC_PROXY: "edge"
+      KC_PROXY: "edge"
     command: "start-dev"
     extends:
       file: common-config.yml
