@@ -1,0 +1,11 @@
+{
+  "realm": "master",
+  "enabled": true,
+  "sslRequired": "NONE",
+  "users": [],
+  "clients": [],
+  "roles": {
+    "realm": [],
+    "client": {}
+  }
+}

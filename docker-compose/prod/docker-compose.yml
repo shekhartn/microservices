@@ -11,9 +11,11 @@ services:
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
       KC_PROXY: "edge"
+    volumes:
+      - ../observability/nginx/realm-export.json:/opt/keycloak/data/import/realm-export.json
     command: >
       start-dev
-      --spi-login-protocol-openid-connect-ssl-required=none
+      --import-realm
     extends:
       file: common-config.yml
       service: network-deploy-service
