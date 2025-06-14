@@ -306,8 +306,6 @@ services:
         condition: service_healthy
       eurekaserver:
         condition: service_healthy
-      kafka:
-        condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "accounts"
       OTEL_SERVICE_NAME: "accounts"
@@ -355,14 +353,12 @@ services:
     extends:
       file: common-config.yml
       service: microservice-eureka-config
+
   message:
     image: "shekhart/message:s14"
     container_name: message-ms
     environment:
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: "kafka:9092"
-    depends_on:
-      kafka:
-        condition: service_healthy
     extends:
       file: common-config.yml
       service: network-deploy-service
