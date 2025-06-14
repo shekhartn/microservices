@@ -381,6 +381,9 @@ services:
     extends:
       file: common-config.yml
       service: microservice-eureka-config
+volumes:
+  kafka_data:
+    driver: local
 networks:
   eazybank:
     driver: "bridge"

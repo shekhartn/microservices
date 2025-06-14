@@ -1,21 +1,28 @@
 services:
   kafka:
-    image: docker.io/bitnami/kafka:3.9
+    image: apache/kafka:4.0.0
+    container_name: kafka
     ports:
       - "9092:9092"
-    volumes:
-      - "kafka_data:/bitnami"
     environment:
-      # KRaft settings
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
-      # Listeners
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_CLUSTER_ID: kraft-cluster-id-12345  # You must provide a static or generated cluster ID
+    volumes:
+      - kafka-data:/tmp/kraft-combined-logs
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "kafka-topics.sh --bootstrap-server localhost:9092 --list || exit 1" ]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 40s
     extends:
       file: common-config.yml
       service: network-deploy-service
@@ -306,6 +313,8 @@ services:
         condition: service_healthy
       eurekaserver:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "accounts"
       OTEL_SERVICE_NAME: "accounts"
@@ -358,6 +367,9 @@ services:
     container_name: message-ms
     environment:
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: "kafka:9092"
+    depends_on:
+      kafka:
+        condition: service_healthy
     extends:
       file: common-config.yml
       service: network-deploy-service
@@ -381,6 +393,10 @@ services:
     extends:
       file: common-config.yml
       service: microservice-eureka-config
+
+volumes:
+  kafka-data: {}
+
 networks:
   eazybank:
     driver: "bridge"
