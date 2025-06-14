@@ -80,7 +80,7 @@
 				<version>3.4.2</version>
 				<configuration>
 					<to>
-						<image>shekhart/${project.artifactId}:s13</image>
+						<image>shekhart/${project.artifactId}:s14</image>
 					</to>
 				</configuration>
 			</plugin>
