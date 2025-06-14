@@ -363,7 +363,7 @@ services:
       file: common-config.yml
       service: microservice-eureka-config
   message:
-    image: "eazybytes/message:s14"
+    image: "shekhart/message:s14"
     container_name: message-ms
     environment:
       SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: "kafka:9092"
