@@ -1,4 +1,4 @@
-{{- define "common.configmap" -}}
+{{- define "common.configmap" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -13,4 +13,4 @@ data:
   OTEL_METRICS_EXPORTER: {{ .Values.global.otelMetricsExporter }}
   OTEL_LOGS_EXPORTER: {{ .Values.global.otelLogsExporter }}
   SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKERS: {{ .Values.global.kafkaBrokerURL }}
-{{- end -}}
+  {{- end }}
