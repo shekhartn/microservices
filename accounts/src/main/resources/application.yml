@@ -18,9 +18,11 @@ spring:
     import:
       - "application_qa.yml"
       - "application_prod.yml"
+      - "application_dev.yml"
+      - "application_test.yml"
+      - "application_staging.yml"
   profiles:
-    active:
-      - qa
+    active: "dev"
 
 
 build:
@@ -34,3 +36,14 @@ accounts:
   onCallSupport:
     - (555) 555-1234
     - (555) 523-1345
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "info"
+  info:
+    git:
+      mode: full
+app:
+  version: ${app.version:unknown}

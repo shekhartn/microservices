@@ -100,7 +100,44 @@
                     </to>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <version>9.0.2</version>
+                <executions>
+                    <execution>
+                        <id>get-git-info</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                </configuration>
+            </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
+    <!-- Semantic version profiles -->
+    <profiles>
+        <profile>
+            <id>staging</id>
+            <properties>
+                <app.version>1.4.0-staging</app.version>
+            </properties>
+        </profile>
 
+        <profile>
+            <id>prod</id>
+            <properties>
+                <app.version>1.4.0</app.version>
+            </properties>
+        </profile>
+    </profiles>
 </project>
